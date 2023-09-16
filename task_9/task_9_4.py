@@ -67,19 +67,16 @@ def ignore_command(command, ignore):
 
 def convert_config_to_dict(config_filename):
     config_dict = {}
-    with open(config_filename, 'r', encoding='utf-8') as read_file:
+    with open(config_filename) as read_file:
         for line in read_file:
-            line = line.strip()
-            if line.startswith('!') or ignore_command(line.strip(), ignore) or len(line) <= 1:
-                continue
-            else:
-                if line.startswith("interface FastEthernet"):
+            line = line.rstrip()
+            if line and not (line.startswith("!") or ignore_command(line, ignore)):
+                if line[0].isalnum():
                     intf = line
                     config_dict[intf] = []
-                elif line.startswith("switchport"):
-                    config_dict[intf].append(line)
                 else:
-                    config_dict[line] = []
+                    config_dict[intf].append(line.strip())
+
     return config_dict
 
 
